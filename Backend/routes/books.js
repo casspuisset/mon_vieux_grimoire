@@ -1,13 +1,14 @@
 const express = require("express");
-const auth = require("auth");
-const bookCtrl = require("../controllers/books");
 const router = express.Router();
+const bookCtrl = require("../controllers/books");
+const auth = require("auth");
+const multer = require("../middleware/multer-config");
 
 //Créer un nouveau livre
-router.post("/", auth, bookCtrl.createBook);
+router.post("/", auth, multer, bookCtrl.createBook);
 
 //Modifier un livre
-router.put("/:id", auth, bookCtrl.modifyBook);
+router.put("/:id", auth, multer, bookCtrl.modifyBook);
 
 //Supprimer un livre
 router.delete("/:id", auth, bookCtrl.deleteBook);
