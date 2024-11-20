@@ -1,8 +1,8 @@
 const express = require("express");
 const mongoose = require("mongoose");
 
-const Book = require("./models/books");
-const User = require("./models/books");
+const bookRoutes = require("./routes/books");
+const userRoutes = require("./routes/user");
 
 const app = express();
 mongoose
@@ -28,44 +28,7 @@ app.use((req, res, next) => {
   next();
 });
 
-//Créer un nouveau livre
-app.post("/api/books", (req, res, next) => {
-  delete req.body._id;
-  const book = new Book({
-    ...req.body,
-  });
-  book
-    .save()
-    .then(() => res.status(201).json({ message: "Livre enregistré" }))
-    .catch((error) => res.status(400).json({ error }));
-});
-
-//Modifier un livre
-app.put("/api/books/:id", (req, res, next) => {
-  Book.updateOne({ _id: req.params.id }, { ...req.body, _id: req.params.id })
-    .then(() => res.status(200).json({ message: "Livre modifié" }))
-    .catch((error) => res.status(400).json({ error }));
-});
-
-//Supprimer un livre
-app.delete("/api/books/:id", (req, res, next) => {
-  Book.deleteOne({ _id: req.params.id })
-    .then((book) => res.status(200).json({ message: "Livre supprimé" }))
-    .catch((error) => res.status(400).json({ error }));
-});
-
-//Obtenir un livre particulier à partir de son id
-app.get("/api/books/:id", (req, res, next) => {
-  Book.findOne({ _id: eq.params.id })
-    .then((book) => res.status(200).json(book))
-    .catch((error) => res.status(400).json({ error }));
-});
-
-//Obtenir tous les livres
-app.get("/api/books", (req, res, next) => {
-  Book.find()
-    .then((books) => res.status(200).json(books))
-    .catch((error) => res.status(400).json({ error }));
-});
+app.use("/api/books", bookRoutes);
+app.use("/api/auth", userRoutes);
 
 module.exports = app;
