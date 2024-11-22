@@ -1,17 +1,19 @@
 const express = require("express");
 const mongoose = require("mongoose");
-
+const path = require("path");
 const bookRoutes = require("./routes/books");
 const userRoutes = require("./routes/user");
 
 const app = express();
 mongoose
   .connect(
-    "mongodb+srv://user:oXyg0UaVXaaWcEh5@cluster0-pme76.mongodb.net/test?retryWrites=true&w=majority",
+    "mongodb+srv://user:testmdp123@cluster0.agoib.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0",
     { useNewUrlParser: true, useUnifiedTopology: true }
   )
   .then(() => console.log("Connexion à MongoDB réussie !"))
-  .catch(() => console.log("Connexion à MongoDB échouée !"));
+  .catch((e) => {
+    console.log("erreur : " + e);
+  });
 
 app.use(express.json());
 
