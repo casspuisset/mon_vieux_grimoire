@@ -19,6 +19,45 @@ exports.createBook = (req, res, next) => {
     .catch((error) => res.status(400).json({ error }));
 };
 
+exports.createRating = (req, res, next) => {
+  const userGrade = req.body.rating;
+  let ratingObject;
+  if (userGrade && 0 < userGrade <= 5) {
+    ratingObject = { ...req.body, grade: userGrade };
+  } else {
+    ratingObject = { ...req.body, grade: 0 };
+  }
+  delete ratingObject._id;
+
+  Book.findOne({ _id: req.params.id })
+    .then((book) => {
+      const bookGrade = book.ratings;
+      const currentUser = req.auth.userId;
+      const ratingList = bookGrade.map((rating) => rating.userId);
+      if (!ratingList[currentUser]) {
+        bookGrade.push(ratingObject);
+        Book.updateOne(
+          { _id: req.params.id },
+          {
+            ratings: bookGrade,
+            //faudra update la note moyenne en plus
+            _id: req.params.id,
+          }
+        )
+          .then(() => {
+            res.status(201).json();
+          })
+          .catch((error) => {
+            res.status(400).json({ error });
+          });
+        res.status(200).json(book);
+      } else {
+        res.status(403).json({ message: "Note déjà enregistrée" });
+      }
+    })
+    .catch((error) => res.status(400).json({ error }));
+};
+
 //Modifier un livre
 exports.modifyBook = (req, res, next) => {
   const bookObject = req.file
@@ -74,7 +113,7 @@ exports.deleteBook = (req, res, next) => {
 
 //Récupérer un livre
 exports.getOneBook = (req, res, next) => {
-  Book.findOne({ _id: eq.params.id })
+  Book.findOne({ _id: req.params.id })
     .then((book) => res.status(200).json(book))
     .catch((error) => res.status(400).json({ error }));
 };
@@ -83,5 +122,15 @@ exports.getOneBook = (req, res, next) => {
 exports.getAllBooks = (req, res, next) => {
   Book.find()
     .then((books) => res.status(200).json(books))
+    .catch((error) => res.status(400).json({ error }));
+};
+
+//calcul pas encore effectué
+exports.getBestRating = (req, res, next) => {
+  Book.find()
+    .then((books) => {
+      console.log(books);
+      res.status(200);
+    })
     .catch((error) => res.status(400).json({ error }));
 };

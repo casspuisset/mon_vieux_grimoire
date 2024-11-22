@@ -7,6 +7,9 @@ const multer = require("../middleware/multer-config");
 //Créer un nouveau livre
 router.post("/", auth, multer, bookCtrl.createBook);
 
+//Ajouter une notation
+router.post("/:id/rating", auth, booksCtrl.createRating);
+
 //Modifier un livre
 router.put("/:id", auth, multer, bookCtrl.modifyBook);
 
@@ -18,5 +21,8 @@ router.get("/:id", auth, bookCtrl.getOneBook);
 
 //Obtenir tous les livres
 router.get("/", auth, bookCtrl.getAllBooks);
+
+//Obtenir les meilleures notations
+router.get("/bestrating", booksCtrl.getBestRating);
 
 module.exports = router;
