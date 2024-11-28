@@ -1,5 +1,7 @@
 const multer = require("multer");
 const sharp = require("sharp");
+const fs = require("fs");
+
 const MIME_TYPES = {
   "image/jpg": "jpg",
   "image/jpeg": "jpeg",
@@ -16,11 +18,26 @@ const storage = multer.diskStorage({
     callback(null, name + Date.now() + "." + extension);
   },
 });
+const image = multer({ storage }).single("image");
 
-const resize = sharp().resize({
-  width: 206,
-  height: 260,
-});
-//à tester quand le problème de post sera réglé
+const sharp = (req, res, next) => {
+  const filepath = req.file.path;
+  sharp(filepath)
+    .resize({ width: 206, height: 260 })
+    .webp({ quality: 85 })
+    .toFile(filepath)
+    .then(() => {
+      fs.unlink(filePath, () => {
+        req.file.path = outputFilePath;
+        next();
+      });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
 
-module.exports = multer({ storage }).single("image").resize;
+module.exports = {
+  image,
+  sharp,
+};
