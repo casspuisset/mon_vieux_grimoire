@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
 });
 const image = multer({ storage }).single("image");
 
-const sharp = (req, res, next) => {
+const sharpResize = (req, res, next) => {
   const filepath = req.file.path;
   sharp(filepath)
     .resize({ width: 206, height: 260 })
@@ -39,5 +39,5 @@ const sharp = (req, res, next) => {
 
 module.exports = {
   image,
-  sharp,
+  sharpResize,
 };
