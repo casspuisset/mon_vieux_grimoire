@@ -1,3 +1,4 @@
+const { title } = require("process");
 const Book = require("../models/books");
 const fs = require("fs");
 
@@ -8,7 +9,7 @@ exports.createBook = (req, res, next) => {
   delete bookObject._userId;
   const book = new Book({
     ...bookObject,
-    userId: req.auth.userId,
+    userId: "2",
     imageUrl: `${req.protocol}://${req.get("host")}/images/${
       req.file.filename
     }`,
@@ -17,7 +18,10 @@ exports.createBook = (req, res, next) => {
   book
     .save()
     .then(() => res.status(201).json({ message: "Livre enregistré" }))
-    .catch((error) => res.status(400).json({ error }));
+    .catch((error) => {
+      console.log("l'erreur est là");
+      res.status(400).json({ error });
+    });
 };
 
 exports.createRating = (req, res, next) => {
@@ -121,9 +125,12 @@ exports.getOneBook = (req, res, next) => {
 
 //Récupérer tous les livres
 exports.getAllBooks = (req, res, next) => {
+  console.log("pitié fonctionne");
   Book.find()
     .then((books) => res.status(200).json(books))
-    .catch((error) => res.status(400).json({ error }));
+    .catch((error) => {
+      res.status(400).json({ error });
+    });
 };
 
 //Récupérer les 3 livres avec la meilleure moyenne

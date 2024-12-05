@@ -5,7 +5,7 @@ const auth = require("../middleware/auth");
 const { image, sharpResize } = require("../middleware/multer-config");
 
 //Créer un nouveau livre
-router.post("/", auth, image, sharpResize, bookCtrl.createBook);
+router.post("/", auth, image, bookCtrl.createBook);
 
 //Ajouter une notation
 router.post("/:id/rating", auth, bookCtrl.createRating);
