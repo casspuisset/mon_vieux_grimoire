@@ -125,7 +125,6 @@ exports.getOneBook = (req, res, next) => {
 
 //Récupérer tous les livres
 exports.getAllBooks = (req, res, next) => {
-  console.log("pitié fonctionne");
   Book.find()
     .then((books) => res.status(200).json(books))
     .catch((error) => {

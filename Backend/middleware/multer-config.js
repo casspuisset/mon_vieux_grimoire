@@ -17,21 +17,27 @@ const storage = multer.diskStorage({
     const extension = MIME_TYPES[file.mimetype];
     callback(null, name + Date.now() + "." + extension);
   },
+  SharpMulter: {
+    destination: (req, file, callback) => callback(null, "images"),
+    imageOptions: {
+      fileFormat: "jpg",
+      quality: 80,
+      resize: { width: 500, height: 500 },
+    },
+  },
 });
 const image = multer({ storage }).single("image");
 
+const upload = multer({ storage });
+
 const sharpResize = (req, res, next) => {
-  const filepath = req.file.path;
+  console.log(req.file);
+  const filepath = req.file.buffer;
   sharp(filepath)
     .resize({ width: 206, height: 260 })
     .webp({ quality: 85 })
-    .toFile(filepath)
-    .then(() => {
-      fs.unlink(filePath, () => {
-        req.file.path = outputFilePath;
-        next();
-      });
-    })
+    .toBuffer()
+    .then(() => (req.file.path = filepath))
     .catch((error) => {
       next(error);
     });
