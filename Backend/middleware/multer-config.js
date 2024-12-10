@@ -4,7 +4,7 @@ const fs = require("fs");
 
 const MIME_TYPES = {
   "image/jpg": "jpg",
-  "image/jpeg": "jpeg",
+  "image/jpeg": "jpg",
   "image/png": "png",
 };
 
@@ -13,37 +13,41 @@ const storage = multer.diskStorage({
     callback(null, "images");
   },
   filename: (req, file, callback) => {
-    const name = file.originalname.split(" ").join("_");
     const extension = MIME_TYPES[file.mimetype];
+    const name = file.originalname.split(" ").join("_");
     callback(null, name + Date.now() + "." + extension);
   },
-  SharpMulter: {
-    destination: (req, file, callback) => callback(null, "images"),
-    imageOptions: {
-      fileFormat: "jpg",
-      quality: 80,
-      resize: { width: 500, height: 500 },
-    },
-  },
 });
-const image = multer({ storage }).single("image");
 
-const upload = multer({ storage });
+const uploadImage = multer({ storage }).single("image");
 
-const sharpResize = (req, res, next) => {
-  console.log(req.file);
-  const filepath = req.file.buffer;
-  sharp(filepath)
-    .resize({ width: 206, height: 260 })
-    .webp({ quality: 85 })
-    .toBuffer()
-    .then(() => (req.file.path = filepath))
-    .catch((error) => {
-      next(error);
-    });
+const sharpResize = async (req, res, next) => {
+  if (req.file) {
+    const filePath = req.file.path;
+
+    sharp(filePath)
+      .resize({ height: 260, width: 206, fit: "cover" })
+      .webp({ quality: 85 })
+      .toBuffer()
+      .then((data) => {
+        sharp(data)
+          .toFile(filePath)
+          .then(() => {
+            next();
+          })
+          .catch((err) => {
+            next(err);
+          });
+      })
+      .catch((err) => {
+        next(err);
+      });
+  } else {
+    return next();
+  }
 };
 
 module.exports = {
-  image,
+  uploadImage,
   sharpResize,
 };
