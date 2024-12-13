@@ -13,11 +13,11 @@ router.post("/:id/rating", auth, bookCtrl.createRating);
 //Obtenir tous les livres
 router.get("/", bookCtrl.getAllBooks);
 
-//Obtenir un livre particulier à partir de son id
-router.get("/:id", bookCtrl.getOneBook);
-
 //Obtenir les meilleures notations
 router.get("/bestrating", bookCtrl.getBestRating);
+
+//Obtenir un livre particulier à partir de son id
+router.get("/:id", bookCtrl.getOneBook);
 
 //Modifier un livre
 router.put("/:id", auth, uploadImage, sharpResize, bookCtrl.modifyBook);
